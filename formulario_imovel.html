@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informações do Imóvel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1A5CCC;
+    --blue-light: #EBF1FB;
+    --blue-dark: #0D3A8A;
+    --text: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --bg: #f8f7f4;
+    --white: #ffffff;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 4rem;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0D3A8A 0%, #1A5CCC 60%, #2979e8 100%);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+  }
+  .hero-icon {
+    width: 60px; height: 60px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    color: white;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    position: relative;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.8);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .progress-wrap {
+    background: rgba(0,0,0,0.15);
+    height: 4px;
+    position: relative;
+  }
+  .progress-bar {
+    height: 100%;
+    background: #7dd3fc;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .container {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+
+  .section {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section:nth-child(1) { animation-delay: 0.05s; }
+  .section:nth-child(2) { animation-delay: 0.1s; }
+  .section:nth-child(3) { animation-delay: 0.15s; }
+  .section:nth-child(4) { animation-delay: 0.2s; }
+  .section:nth-child(5) { animation-delay: 0.25s; }
+  .section:nth-child(6) { animation-delay: 0.3s; }
+  .section:nth-child(7) { animation-delay: 0.35s; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .section-title span {
+    width: 22px; height: 22px;
+    background: var(--blue-light);
+    border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: var(--blue);
+  }
+
+  .field-row { display: grid; gap: 12px; margin-bottom: 12px; }
+  .field-row:last-child { margin-bottom: 0; }
+  .field-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .field-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .field-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+
+  input[type="text"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="email"],
+  select,
+  textarea {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,92,204,0.1);
+    background: white;
+  }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
+
+  .counter-group { display: flex; align-items: center; }
+  .counter-btn {
+    width: 34px; height: 38px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .counter-btn:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+  .counter-btn:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .counter-btn:hover { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+  .counter-btn:active { transform: scale(0.94); }
+  .counter-val {
+    flex: 1;
+    height: 38px;
+    border: 1.5px solid var(--border);
+    border-left: none; border-right: none;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 600;
+    color: var(--text);
+    min-width: 38px;
+  }
+
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    padding: 7px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    display: flex; align-items: center; gap: 5px;
+    background: white;
+  }
+  .pill:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+  .pill.active {
+    border-color: var(--blue);
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    font-weight: 500;
+  }
+
+  .required { color: #e53e3e; margin-left: 2px; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #1A5CCC, #2979e8);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 14px rgba(26,92,204,0.3);
+    letter-spacing: 0.01em;
+  }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,92,204,0.35); }
+  .submit-btn:active { transform: translateY(0); }
+
+  .success {
+    display: none;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 3rem 1.5rem;
+    text-align: center;
+    animation: fadeUp 0.4s ease both;
+  }
+  .success-icon {
+    width: 70px; height: 70px;
+    background: var(--green-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 32px;
+  }
+  .success h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  .success p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 380px;
+    margin: 0 auto 1.5rem;
+  }
+  .ficha-box {
+    background: #f8f7f4;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+  }
+  .copy-btn {
+    background: white;
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 22px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .copy-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+
+  .error-msg {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: var(--radius-sm);
+    color: #b91c1c;
+    font-size: 13px;
+    padding: 10px 14px;
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    .field-row.cols-4 { grid-template-columns: 1fr 1fr; }
+    .field-row.cols-3 { grid-template-columns: 1fr 1fr; }
+    .field-row.cols-2 { grid-template-columns: 1fr; }
+    .hero { padding: 2rem 1.25rem 2rem; }
+    .section { padding: 1.2rem 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-icon">🏠</div>
+  <h1>Informações do seu Imóvel</h1>
+  <p>Preencha os dados abaixo para agilizarmos o processo de venda do seu imóvel com segurança.</p>
+</div>
+<div class="progress-wrap">
+  <div class="progress-bar" id="progress"></div>
+</div>
+
+<div class="container">
+
+  <div id="error-msg" class="error-msg">⚠️ Por favor, preencha os campos obrigatórios: nome, WhatsApp e endereço.</div>
+
+  <div id="the-form">
+
+    <div class="section">
+      <div class="section-title"><span>👤</span> Seus dados</div>
+      <div class="field-row cols-2">
+        <div class="field">
+          <label>Nome completo <span class="required">*</span></label>
+          <input type="text" id="nome" placeholder="Seu nome completo" oninput="updateProgress()">
+        </div>
+        <div class="field">
+          <label>WhatsApp <span class="required">*</span></label>
+          <input type="tel" id="tel" placeholder="(11) 99999-9999" oninput="updateProgress()">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>📍</span> Localização e tipo</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Endereço completo <span class="required">*</span></label>
+          <input type="text" id="endereco" placeholder="Rua, número, bairro, cidade, estado" oninput="updateProgress()">
+        </div>
+      </div>
+      <div class="field-row cols-2">
+        <div class="field">
+          <label>Tipo de imóvel</label>
+          <select id="tipo">
+            <option value="">Selecione...</option>
+            <option>Apartamento</option>
+            <option>Casa</option>
+            <option>Casa em condomínio</option>
+            <option>Cobertura</option>
+            <option>Kitnet / Studio</option>
+            <option>Terreno</option>
+            <option>Comercial</option>
+            <option>Chácara / Sítio</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Área total (m²)</label>
+          <input type="number" id="area" placeholder="Ex: 85" oninput="updateProgress()">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>🛏</span> Cômodos</div>
+      <div class="field-row cols-4">
+        <div class="field">
+          <label>Quartos</label>
+          <div class="counter-group">
+            <button class="counter-btn" onclick="change('quartos',-1)" type="button">−</button>
+            <div class="counter-val" id="quartos">0</div>
+            <button class="counter-btn" onclick="change('quartos',1)" type="button">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Suítes</label>
+          <div class="counter-group">
+            <button class="counter-btn" onclick="change('suites',-1)" type="button">−</button>
+            <div class="counter-val" id="suites">0</div>
+            <button class="counter-btn" onclick="change('suites',1)" type="button">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Banheiros</label>
+          <div class="counter-group">
+            <button class="counter-btn" onclick="change('banheiros',-1)" type="button">−</button>
+            <div class="counter-val" id="banheiros">0</div>
+            <button class="counter-btn" onclick="change('banheiros',1)" type="button">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Salas</label>
+          <div class="counter-group">
+            <button class="counter-btn" onclick="change('salas',-1)" type="button">−</button>
+            <div class="counter-val" id="salas">0</div>
+            <button class="counter-btn" onclick="change('salas',1)" type="button">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>🚗</span> Vagas de garagem</div>
+      <div class="pill-group" id="garagem-group">
+        <div class="pill" onclick="selectRadio('garagem-group',this,'Nenhuma')">Nenhuma</div>
+        <div class="pill" onclick="selectRadio('garagem-group',this,'1 vaga')">1 vaga</div>
+        <div class="pill" onclick="selectRadio('garagem-group',this,'2 vagas')">2 vagas</div>
+        <div class="pill" onclick="selectRadio('garagem-group',this,'3 ou mais vagas')">3 ou mais</div>
+        <div class="pill" onclick="selectRadio('garagem-group',this,'Garagem coberta')">Coberta</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>✨</span> Diferenciais e características</div>
+      <div class="pill-group" id="extras-group">
+        <div class="pill" onclick="toggleExtra(this)">🏊 Piscina</div>
+        <div class="pill" onclick="toggleExtra(this)">🏋️ Academia</div>
+        <div class="pill" onclick="toggleExtra(this)">🔥 Churrasqueira</div>
+        <div class="pill" onclick="toggleExtra(this)">🌿 Varanda / Terraço</div>
+        <div class="pill" onclick="toggleExtra(this)">🧺 Área de serviço</div>
+        <div class="pill" onclick="toggleExtra(this)">🛡️ Portaria 24h</div>
+        <div class="pill" onclick="toggleExtra(this)">🛗 Elevador</div>
+        <div class="pill" onclick="toggleExtra(this)">❄️ Ar-condicionado</div>
+        <div class="pill" onclick="toggleExtra(this)">🌳 Jardim</div>
+        <div class="pill" onclick="toggleExtra(this)">📦 Depósito / Despensa</div>
+        <div class="pill" onclick="toggleExtra(this)">🐾 Pet friendly</div>
+        <div class="pill" onclick="toggleExtra(this)">☀️ Energia solar</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>📄</span> Documentação</div>
+      <div class="field-row cols-2">
+        <div class="field">
+          <label>Situação da matrícula</label>
+          <select id="matricula">
+            <option value="">Selecione...</option>
+            <option>Matrícula atualizada</option>
+            <option>Matrícula com pendências</option>
+            <option>Em processo de regularização</option>
+            <option>Imóvel irregular / sem matrícula</option>
+            <option>Não sei informar</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>IPTU</label>
+          <select id="iptu">
+            <option value="">Selecione...</option>
+            <option>Em dia</option>
+            <option>Com débitos</option>
+            <option>Isento</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row cols-2">
+        <div class="field">
+          <label>Financiamento / ônus</label>
+          <select id="financiamento">
+            <option value="">Selecione...</option>
+            <option>Imóvel quitado</option>
+            <option>Financiamento ativo (banco)</option>
+            <option>Alienação fiduciária</option>
+            <option>Consórcio em andamento</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Valor pretendido (R$)</label>
+          <input type="text" id="valor" placeholder="Ex: 450.000">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Observações sobre a documentação</label>
+          <textarea id="obs-doc" placeholder="Inventário, divórcio, herdeiros, procuração, pendências judiciais..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>💬</span> Informações adicionais</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Estado de conservação</label>
+          <select id="conservacao">
+            <option value="">Selecione...</option>
+            <option>Novo / Nunca habitado</option>
+            <option>Seminovo / Ótimo estado</option>
+            <option>Bom estado</option>
+            <option>Precisa de reparos</option>
+            <option>Para reformar</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Outras observações</label>
+          <textarea id="obs-geral" placeholder="Motivo da venda, disponibilidade para visitas, reformas realizadas, mobiliário incluso..." style="min-height: 100px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="submitForm()" type="button">
+      Enviar informações &nbsp;→
+    </button>
+
+  </div>
+
+  <div class="success" id="success-msg">
+    <div class="success-icon">✅</div>
+    <h2>Recebemos seus dados!</h2>
+    <p id="success-text">Obrigado! Entraremos em contato pelo WhatsApp em breve para dar continuidade ao processo de venda.</p>
+    <div class="ficha-box" id="ficha-resumo"></div>
+    <button class="copy-btn" onclick="copyFicha()">📋 Copiar ficha do imóvel</button>
+  </div>
+
+</div>
+
+<script>
+  const counters = { quartos: 0, suites: 0, banheiros: 0, salas: 0 };
+
+  function change(id, delta) {
+    counters[id] = Math.max(0, counters[id] + delta);
+    document.getElementById(id).textContent = counters[id];
+    updateProgress();
+  }
+
+  function selectRadio(groupId, el, val) {
+    document.querySelectorAll('#' + groupId + ' .pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    el.dataset.value = val;
+  }
+
+  function toggleExtra(el) {
+    el.classList.toggle('active');
+  }
+
+  function updateProgress() {
+    const fields = ['nome', 'tel', 'endereco', 'area'];
+    const filled = fields.filter(id => document.getElementById(id).value.trim() !== '').length;
+    document.getElementById('progress').style.width = Math.round((filled / fields.length) * 100) + '%';
+  }
+
+  function buildFicha() {
+    const garagem = document.querySelector('#garagem-group .pill.active')?.dataset.value || 'Não informado';
+    const extras = [...document.querySelectorAll('#extras-group .pill.active')].map(el => el.textContent.trim()).join(', ') || 'Nenhum';
+
+    return `📋 FICHA DO IMÓVEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 CLIENTE
+   Nome: ${document.getElementById('nome').value || '—'}
+   WhatsApp: ${document.getElementById('tel').value || '—'}
+
+🏠 IMÓVEL
+   Tipo: ${document.getElementById('tipo').value || 'Não informado'}
+   Endereço: ${document.getElementById('endereco').value || '—'}
+   Área: ${document.getElementById('area').value ? document.getElementById('area').value + ' m²' : '—'}
+   Conservação: ${document.getElementById('conservacao').value || 'Não informado'}
+
+🛏 CÔMODOS
+   Quartos: ${counters.quartos}  |  Suítes: ${counters.suites}
+   Banheiros: ${counters.banheiros}  |  Salas: ${counters.salas}
+   Garagem: ${garagem}
+
+✨ DIFERENCIAIS
+   ${extras}
+
+📄 DOCUMENTAÇÃO
+   Matrícula: ${document.getElementById('matricula').value || 'Não informado'}
+   IPTU: ${document.getElementById('iptu').value || 'Não informado'}
+   Financiamento: ${document.getElementById('financiamento').value || 'Não informado'}
+   Valor pretendido: ${document.getElementById('valor').value ? 'R$ ' + document.getElementById('valor').value : 'A definir'}
+
+📝 OBS. DOCUMENTAÇÃO
+   ${document.getElementById('obs-doc').value || '—'}
+
+💬 OBS. GERAIS
+   ${document.getElementById('obs-geral').value || '—'}`;
+  }
+
+  let fichaTexto = '';
+
+  function submitForm() {
+    const nome = document.getElementById('nome').value.trim();
+    const tel = document.getElementById('tel').value.trim();
+    const endereco = document.getElementById('endereco').value.trim();
+    const errEl = document.getElementById('error-msg');
+
+    if (!nome || !tel || !endereco) {
+      errEl.style.display = 'block';
+      errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    errEl.style.display = 'none';
+
+    fichaTexto = buildFicha();
+    document.getElementById('ficha-resumo').textContent = fichaTexto;
+    document.getElementById('success-text').textContent =
+      'Obrigado, ' + nome.split(' ')[0] + '! Entraremos em contato pelo WhatsApp em breve.';
+
+    document.getElementById('the-form').style.display = 'none';
+    const s = document.getElementById('success-msg');
+    s.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function copyFicha() {
+    navigator.clipboard.writeText(fichaTexto).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ Copiado!';
+      setTimeout(() => btn.textContent = '📋 Copiar ficha do imóvel', 2000);
+    }).catch(() => {
+      alert('Selecione o texto acima e copie manualmente.');
+    });
+  }
+</script>
+</body>
+</html>
